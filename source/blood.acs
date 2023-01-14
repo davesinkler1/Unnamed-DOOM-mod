@@ -1,0 +1,56 @@
+#include "zcommon.acs"
+
+static const class<actor> headshot_Ignore[] = 
+		{
+		// Doom
+		"Demon",
+		"Spectre",
+		"LostSoul",
+		"Cacodemon",
+		"Revenant",
+		"PainElemental",
+		"Arachnotron",
+		"SpiderMastermind"
+		
+		};
+
+script "Script_Blood" (int bloodz) // blood's Z is already passed automatically
+{
+	int ownerz;
+	
+	// set activator to blood's owner, and retrieve its Z coord
+	SetActivatorToTarget(0);
+	
+	bool checkHeadshot(class<actor> check)
+		{
+		int size = headshot_Ignore.Size();
+		
+		for(int i = 0; i < size; i++)
+			{
+			if(check is headshot_Ignore[i])
+				return false;
+			}
+		return true;
+		}
+		
+			
+		if ((ClassifyActor(0) & ACTOR_MONSTER ) && (checkHeadshot))
+	{
+		ownerz = GetActorZ(0) >> 16;
+		
+		int headshotheight = (GetActorProperty(0, APROP_HEIGHT) >> 16) - 20;
+		int legshotheight = (GetActorProperty(0, APROP_HEIGHT) >> 16) / 4; // yeah the math here is bad but i don't care
+		
+		// head shot
+		if (bloodz > (ownerz + headshotheight))
+			Thing_Damage2(0, 0x7FFFFFFF, "Normal"); // replace with your custom headshot damage type
+		
+		// leg shot
+		// uncomment and do your own custom leg shot damage states here.
+		//if (bloodz < (ownerz + legshotheight))
+		//{
+		//	printbold(s: "legshot!");
+		//	Thing_Damage2(0, 0x7FFFFFFF, "LegShotDamage");
+		//}
+	}
+}
